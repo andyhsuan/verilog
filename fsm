@@ -1,1 +1,55 @@
+`timescale 1ns/1ps
+
+module tb_seq101_mealy;
+
+    reg clk;
+    reg reset;
+    reg in;
+    wire out;
+
+    // 實例化被測模組（UUT）
+    seq101_mealy uut (
+        .clk(clk),
+        .reset(reset),
+        .in(in),
+        .out(out)
+    );
+
+    // 產生時鐘：週期 10ns（每 5ns 翻轉一次）
+    always #5 clk = ~clk;
+
+    // 初始化與刺激（stimulus）
+    initial begin
+        // 波形輸出設定
+        $dumpfile("seq101.vcd");
+        $dumpvars(0, tb_seq101_mealy);
+
+        // 初始值
+        clk = 0;
+        reset = 1;
+        in = 0;
+
+        // 釋放 reset
+        #12 reset = 0;
+
+        // 輸入 bit 序列：10110101（會出現兩次偵測成功）
+        #10 in = 1;   // time = 22
+        #10 in = 0;   // time = 32
+        #10 in = 1;   // "101" → out=1 at time = 42
+        #10 in = 1;   // time = 52
+        #10 in = 0;   // time = 62
+        #10 in = 1;   // "101" again → out=1 at time = 72
+        #10 in = 0;   // time = 82
+        #10 in = 0;   // time = 92
+
+        #20 $finish;  // 結束模擬
+    end
+
+    // 顯示模擬時的變數狀態（可選）
+    initial begin
+        $display("time\tclk\treset\tin\tout");
+        $monitor("%4t\t%b\t%b\t%b\t%b", $time, clk, reset, in, out);
+    end
+
+endmodule
 
