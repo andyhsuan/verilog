@@ -1,1 +1,52 @@
+module seq101_mealy (
+    input wire clk,
+    input wire reset,
+    input wire in,
+    output reg out
+);
+
+    // 狀態定義（用 parameter）
+    parameter S0 = 2'b00;
+    parameter S1 = 2'b01;
+    parameter S2 = 2'b10;
+
+    reg [1:0] state, next_state;
+
+    // 狀態更新（同步）
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            state <= S0;
+        else
+            state <= next_state;
+    end
+
+    // 次狀態與輸出邏輯（組合邏輯）
+    always @(*) begin
+        next_state = state;
+        out = 0;
+
+        case (state)
+            S0: begin
+                if (in)
+                    next_state = S1;
+                else
+                    next_state = S0;
+            end
+            S1: begin
+                if (in)
+                    next_state = S1;
+                else
+                    next_state = S2;
+            end
+            S2: begin
+                if (in) begin
+                    next_state = S1;
+                    out = 1;  // 偵測到 "101"
+                end else
+                    next_state = S0;
+            end
+        endcase
+    end
+
+endmodule
 
