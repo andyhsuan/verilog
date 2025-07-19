@@ -1,3 +1,8 @@
+// this arbiter module operates as a finite state machine (FSM) that arbitrates access to the 
+// slaves based on a fixed priority scheme and facilitates data transfer using a handshake 
+// mechanism. It is synchronized with a clock signal and includes an asynchronous 
+// active-low reset for initialization.
+
 module arbiter (
     clk,
     rst_n,
